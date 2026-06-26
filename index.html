@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ready Unreal — AI와 함께 만드는 언리얼 엔진</title>
+<style>
+  :root{
+    --bg:#070b0a; --bg2:#0c1411; --bg3:#10201a; --line:#1c3a2e;
+    --tx:#c9e8d8; --tx2:#6f9684; --green:#3ef07f; --green-d:#1f7d4a;
+    --amber:#ffb454; --cyan:#5ad6ff;
+    --radius:10px;
+    --mono:"D2Coding","Cascadia Code","JetBrains Mono",Consolas,"Courier New",monospace;
+    --sans:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--sans);
+    font-size:16px;line-height:1.78;-webkit-font-smoothing:antialiased;position:relative;min-height:100vh}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
+    background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.18) 3px);
+    opacity:.25;mix-blend-mode:multiply}
+  a{color:var(--green);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.88em;background:#0c1a14;color:#a8f0c8;
+    padding:.1em .42em;border-radius:4px;border:1px solid var(--line)}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px}
+  /* hero */
+  header.term{border-bottom:1px solid var(--line);background:
+    radial-gradient(1000px 260px at 25% -30%,#0e2a1d,transparent),var(--bg2)}
+  header.term .bar{display:flex;align-items:center;gap:8px;padding:11px 18px;border-bottom:1px solid var(--line)}
+  header.term .dot{width:12px;height:12px;border-radius:50%}
+  .d1{background:#ff5f56}.d2{background:#ffbd2e}.d3{background:#27c93f}
+  header.term .bar .ttl{margin-left:10px;font-family:var(--mono);font-size:.82rem;color:var(--tx2)}
+  .hero{max-width:980px;margin:0 auto;padding:54px 24px 46px}
+  .hero h1{margin:0;font-family:var(--mono);font-size:2.9rem;line-height:1.12;color:#eafff3;letter-spacing:-.01em}
+  .hero h1 .pmt{color:var(--green);text-shadow:0 0 16px var(--green-d)}
+  .hero .ko{margin:14px 0 4px;font-size:1.2rem;color:var(--tx)}
+  .hero .en{margin:0;font-family:var(--mono);font-size:.9rem;color:var(--tx2);letter-spacing:.04em}
+  .hero .blurb{margin:22px 0 0;max-width:64ch;color:var(--tx);font-size:1rem}
+  .hero .blurb b{color:#eafff3}
+  .badges{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-family:var(--mono);font-size:.74rem;padding:4px 11px;border-radius:20px;
+    border:1px solid var(--line);background:#0a1812;color:var(--tx2)}
+  .badge.on{border-color:var(--green-d);color:var(--green);box-shadow:inset 0 0 14px #0c3a22}
+  .badge.exp{border-color:#8957e5;color:#cdb4ff}
+  /* sections */
+  main{padding:46px 0 90px}
+  h2.sec{font-family:var(--mono);font-size:1.05rem;color:var(--green);margin:0 0 6px;letter-spacing:.04em}
+  h2.sec::before{content:"## "}
+  .sec-sub{color:var(--tx2);font-size:.92rem;margin:0 0 22px}
+  /* curriculum */
+  .lec{display:flex;align-items:center;gap:18px;padding:18px 20px;margin:0 0 12px;
+    border:1px solid var(--line);border-radius:var(--radius);background:var(--bg2);
+    transition:.15s;color:var(--tx)}
+  a.lec:hover{border-color:var(--green-d);background:#0d1c15;text-decoration:none;
+    box-shadow:0 0 0 1px var(--green-d),0 6px 24px -12px #000;transform:translateY(-1px)}
+  .lec .ep{font-family:var(--mono);font-size:1.7rem;font-weight:700;color:var(--green);
+    min-width:54px;text-align:center;opacity:.9}
+  .lec .body{flex:1;min-width:0}
+  .lec .t{font-size:1.06rem;color:#eafff3;font-weight:600;margin:0}
+  .lec .d{font-size:.9rem;color:var(--tx2);margin:3px 0 0}
+  .lec .stat{font-family:var(--mono);font-size:.76rem;padding:4px 11px;border-radius:20px;white-space:nowrap}
+  .lec .stat.done{color:var(--green);border:1px solid var(--green-d);background:#0c2418}
+  .lec .stat.soon{color:var(--tx2);border:1px solid var(--line);background:#0a1210}
+  .lec.soon{opacity:.55;cursor:default}
+  .lec.soon .ep{color:var(--tx2)}
+  /* about */
+  .about{margin-top:40px;border:1px dashed var(--line);border-radius:var(--radius);
+    background:var(--bg2);padding:22px 24px}
+  .about p{margin:0 0 10px;color:var(--tx2);font-size:.94rem}
+  .about p:last-child{margin:0}
+  .about b{color:var(--tx)}
+  footer{border-top:1px solid var(--line);color:var(--tx2);font-family:var(--mono);
+    font-size:.8rem;padding:22px 24px;text-align:center}
+  @media(max-width:640px){
+    .hero h1{font-size:2.1rem}
+    .lec{gap:12px;padding:15px 16px}
+    .lec .ep{font-size:1.3rem;min-width:38px}
+  }
+</style>
+</head>
+<body>
+<header class="term">
+  <div class="bar">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="ttl">ready-unreal // course index</span>
+  </div>
+  <div class="hero">
+    <h1><span class="pmt">$</span> Ready Unreal</h1>
+    <p class="ko">AI와 함께 만드는 언리얼 엔진</p>
+    <p class="en">Unreal Engine, in the AI Era — get ready to build with AI.</p>
+    <p class="blurb">언리얼 엔진 5.8이 에디터 안에 <b>MCP 서버</b>를 품으면서, 이제 <b>Claude Code 같은 AI 에이전트가 에디터를 직접 조작</b>합니다. 이 교재는 그 환경을 <b>처음부터 셋업</b>하고, AI와 함께 레벨·액터·블루프린트를 만드는 실전 워크플로를 단계별 실습으로 익힙니다.</p>
+    <div class="badges">
+      <span class="badge on">UE 5.8</span>
+      <span class="badge exp">Experimental MCP</span>
+      <span class="badge">Claude Code</span>
+      <span class="badge">GitHub Pages 교재</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h2 class="sec">curriculum</h2>
+    <p class="sec-sub">강의 목차 — 각 강은 단독으로 따라 할 수 있는 실습 문서입니다.</p>
+
+    <a class="lec" href="mcp_setup.html">
+      <span class="ep">01</span>
+      <span class="body">
+        <p class="t">UE 5.8 MCP + Claude Code 셋업</p>
+        <p class="d">플러그인 활성화 → 서버 설정 → .mcp.json 생성 → 연결 검증 → 첫 조명 스폰까지</p>
+      </span>
+      <span class="stat done">열기 →</span>
+    </a>
+
+    <div class="lec soon">
+      <span class="ep">02</span>
+      <span class="body">
+        <p class="t">레벨·액터·조명 자동화 실습</p>
+        <p class="d">SceneTools / EditorToolset로 자연어 한 줄로 씬 구성하기</p>
+      </span>
+      <span class="stat soon">준비 중</span>
+    </div>
+
+    <div class="lec soon">
+      <span class="ep">03</span>
+      <span class="body">
+        <p class="t">나만의 커스텀 Toolset 만들기 (C++)</p>
+        <p class="d">AI Toolset Registry에 직접 도구를 등록해 Claude에게 새 능력 부여</p>
+      </span>
+      <span class="stat soon">준비 중</span>
+    </div>
+
+    <div class="lec soon">
+      <span class="ep">04</span>
+      <span class="body">
+        <p class="t">블루프린트 · 머티리얼 AI 워크플로</p>
+        <p class="d">BlueprintTools / MaterialTools로 그래프와 머티리얼을 AI와 함께 편집</p>
+      </span>
+      <span class="stat soon">준비 중</span>
+    </div>
+
+    <div class="lec soon">
+      <span class="ep">05</span>
+      <span class="body">
+        <p class="t">PCG · Niagara · Sequencer 활용</p>
+        <p class="d">절차적 생성·이펙트·시네마틱을 AI 에이전트로 다루기</p>
+      </span>
+      <span class="stat soon">준비 중</span>
+    </div>
+
+    <div class="about">
+      <p><b>이 교재에 대하여.</b> 모든 실습은 Windows + UE 5.8 + Claude Code 기준이며, 각 강의 명령·설정은 복사해서 바로 쓸 수 있습니다.</p>
+      <p>현재 UE 5.8의 MCP는 <b>Experimental</b> 단계라 일부 동작·이름이 정식 릴리스에서 바뀔 수 있습니다. 문서는 실제 화면 스크린샷과 공식 문서를 기준으로 검증되어 있습니다.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  // Ready Unreal · AI와 함께 만드는 언리얼 엔진 · GitHub Pages 강의 교재
+</footer>
+</body>
+</html>
