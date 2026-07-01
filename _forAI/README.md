@@ -22,9 +22,10 @@
 ## 현재 스냅샷
 
 - 저장소 경로: `C:\works\ue_prjs\ready_unreal`
-- 대상 보드/플랫폼: TODO
-- 현재 버전: TODO
-- 메인 엔트리포인트: TODO
+- 성격: UE 5.8 + Unreal MCP + Claude Code 셋업 **교재/가이드 레포** (정적 문서)
+- 대상 플랫폼: Windows 11 / PowerShell · UE 5.8(Experimental MCP) · Claude Code(CLI·VSCode 확장)
+- MCP 엔드포인트: `http://127.0.0.1:8000/mcp` (HTTP 전용, loopback)
+- 메인 엔트리포인트: 사람=`readme.md`(에디터 셋업) / AI=`_forAI/memo.md`(클라이언트 등록·운영)
 
 ## 유지 규칙
 

@@ -158,6 +158,90 @@ claude mcp add --transport http unreal-mcp http://127.0.0.1:8000/mcp
 
 ---
 
+## 부록 A. 클라이언트 측 등록 심화 — 스코프와 전역(user) 단일화
+
+> 5장이 **프로젝트 단위**(`.mcp.json`) 연결이라면, 이 부록은 **개인 작업 PC에서 어느 폴더에서
+> 세션을 열든 항상 쓰도록** 전역(user) 등록하는 방법이다. 명령 한 줄이면 끝난다.
+
+### A-1. 등록 스코프 3종
+
+같은 이름이 여러 스코프에 있으면 **우선순위 높은 것 하나만** 활성화된다.
+
+| 스코프 | 저장 위치 (Windows) | 적용 범위 | 우선순위 | git 공유 |
+|--------|---------------------|-----------|:--------:|:--------:|
+| **local** | `~/.claude.json` 의 해당 프로젝트 항목 | 그 폴더만 | 1 (최상) | ✗ |
+| **project** | 프로젝트 루트 `.mcp.json` (4장에서 생성) | 그 프로젝트만 | 2 | ✓ |
+| **user** | `~/.claude.json` 최상위 `mcpServers` | **모든 프로젝트** | 3 | ✗ |
+
+`~` = `C:\Users\<사용자>`. **개인 PC면 `user`(전역) 단일화**가 가장 편하다.
+
+### A-2. 설정 파일 구분 (자주 헷갈림)
+
+| 파일 | 담는 것 |
+|------|---------|
+| `~/.claude.json` | **MCP 서버 정의**(local·user) + 프로젝트별 상태 |
+| `<프로젝트>/.mcp.json` | **MCP 서버 정의**(project) |
+| `~/.claude/settings.json`, `.claude/settings.local.json` | **권한·env·hooks 전용 — MCP 정의 아님** |
+| VSCode 자체 `settings.json` | VSCode 에디터 설정일 뿐, Claude Code MCP와 무관 |
+
+> ⚠️ "Gmail 커넥터처럼 `settings.json`에 넣으면 되지 않나?"는 오해다. 로컬 MCP는
+> `settings.json`이 아니라 `~/.claude.json`(또는 `.mcp.json`)에 등록한다.
+
+### A-3. VSCode 확장도 CLI와 같은 파일을 읽는다 (핵심)
+
+VSCode의 Claude Code 확장과 CLI는 **동일한 `~/.claude.json`을 공유**한다. 따라서
+**CLI에서 `--scope user`로 한 번만 등록하면 VSCode 확장에서도 전역으로 적용**된다.
+(확장 쪽 별도 설정 불필요.)
+
+### A-4. 한방 레시피 (복붙)
+
+```powershell
+# 전역(user) 등록 + 즉시 검증 — 이 두 줄이면 끝
+claude mcp add unreal-mcp --scope user --transport http http://127.0.0.1:8000/mcp
+claude mcp list
+```
+
+→ 그다음 **Claude 세션만 새로 시작**하면 `/mcp`에 `unreal-mcp ✓ connected`.
+
+### A-5. 스코프 치트시트
+
+```powershell
+claude mcp add <name> -s user    -t http <url>   # 전역(모든 프로젝트)  ← 개인 PC 표준
+claude mcp add <name> -s project -t http <url>   # 이 프로젝트만(.mcp.json, 팀 공유)
+claude mcp add <name> -s local   -t http <url>   # 이 프로젝트 + 내 머신만(기본값)
+claude mcp remove <name> -s <scope>              # 해당 스코프에서 제거
+claude mcp list ; claude mcp get <name>          # 목록 / 스코프·상태 확인
+```
+
+`-s`=`--scope`, `-t`=`--transport`. stdio 서버는 `claude mcp add <name> -- <command> <args...>`
+(`--` 뒤가 실행 명령).
+
+### A-6. AI에게 맡기는 한 문장 (복붙)
+
+명령을 외우기 싫으면 Claude Code에 그대로 붙여넣으면 알아서 처리한다:
+
+> `unreal-mcp`(http://127.0.0.1:8000/mcp, http transport)를 **user(전역) 스코프**로 등록해줘.
+> 다른 스코프(local/project)에 같은 이름이 있으면 정리하고, `claude mcp list`로 검증한 뒤,
+> **현재 세션엔 재시작해야 반영된다는 점**을 알려줘.
+
+포트/URL만 바꾸면 어떤 http MCP에도 쓰는 범용 지시문이다.
+
+### A-7. claude.ai 커넥터 ≠ 로컬 MCP
+
+- **커넥터**(Gmail·Google Drive·Hugging Face): claude.ai가 호스팅하는 **원격** 통합.
+  설정 파일 어디에도 없고 **계정 로그인으로 자동 연결**된다.
+- **로컬 MCP**(`unreal-mcp`): 내 머신에서 도는 서버. 위처럼 **명시적으로 등록**해야 한다.
+
+### A-8. 자주 겪는 함정
+
+| 증상 | 원인 / 해결 |
+|------|-------------|
+| 설정을 바꿨는데 현재 세션에 안 뜬다 | MCP는 **세션 시작 시 1회 로드** → Claude **재시작**해야 반영 |
+| 폴더(프로젝트)에 따라 보였다 안 보였다 | local/project 스코프라 cwd 의존 → **user(전역) 단일화**로 해결 |
+| 비(非)언리얼 프로젝트에서도 `unreal-mcp`가 뜸/연결 실패 경고 | 다른 프로젝트에 local 등록이 남아있음 → `claude mcp remove ... -s local` |
+
+---
+
 ## 9. 출처 (2026-06 기준)
 
 - [Unreal MCP in Unreal Editor — UE 5.8 공식 문서 (Epic)](https://dev.epicgames.com/documentation/unreal-engine/unreal-mcp-in-unreal-editor?lang=en-US)
