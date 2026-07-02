@@ -1,5 +1,14 @@
 # Inventory
 
+## 목차
+
+- [Repository](#repository)
+- [Top-level structure](#top-level-structure)
+- [Entrypoints and key modules](#entrypoints-and-key-modules)
+- [Build and validation commands](#build-and-validation-commands)
+- [Tests](#tests)
+- [Notes](#notes)
+
 ## Repository
 
 - Name: `ready_unreal`
@@ -9,14 +18,17 @@
 
 ## Top-level structure
 
-- `readme.md` — 핵심 본문. "UE 5.8 + MCP + Claude Code 협업 셋업 가이드" (에디터 측 절차)
+- `readme.md` — 핵심 본문. "UE 5.8 + MCP + Claude Code 협업 셋업 가이드"
+  (에디터 측 준비 + 5장 클라이언트 연결(방법 A/B/C·연결 확인) + 부록 A 스코프/전역 등록 + 부록 B 자동 셋업 스크립트)
 - `mcp_setup.html` — 셋업 가이드의 HTML 버전(브라우저 열람용)
 - `index.html` — 진입 페이지
+- `tools/Enable-UnrealMcp.ps1` — 새 프로젝트 MCP 셋업 자동화 스크립트(`.uproject` 플러그인 주입 + 자동시작 ini, 멱등)
 - `screen_shot/` — 가이드용 캡처
   - `setup_model_context_protocol.png` (Editor Preferences > MCP)
   - `mcp_plugin_install.png` (Unreal MCP 플러그인 활성화)
   - `toolsets_install.png` (AllToolsets/Toolset Registry 활성화)
   - `cmd.png`, `cmd_log.png` (콘솔 명령 / 로그)
+  - `unreal_mcp_connected.png` (`/mcp` 연결 확인 — User 스코프 `unreal-mcp ✓ Connected`)
 - `_forAI/` — AI 작업 문맥 문서 세트(본 디렉터리)
 - `.gitignore`, `.git/`
 
@@ -43,6 +55,8 @@
 
 ## Notes
 
-- 가이드 본문(`readme.md`)은 **에디터 측 준비**에 집중. **클라이언트(Claude Code) 측
-  등록·스코프·CLI·운영**은 `_forAI/memo.md`에 보강되어 있다(짝 문서).
+- 가이드 본문(`readme.md`)은 **에디터 측 준비**가 중심이되, 클라이언트 연결은 **5장**
+  (방법 A/B/C·연결 확인 — Claude Code에 직접 맡기는 프롬프트 3종 포함), 스코프/전역
+  등록 심화는 **부록 A**, 신규 프로젝트 자동 셋업은 **부록 B**에 정리되어 있다.
+  AI용 심화 운영 지식은 `_forAI/memo.md`가 짝 문서.
 - 동일 MCP를 쓰는 형제 프로젝트: `C:\works\ue_prjs\MyProject`(UE 5.8 C++ 프로젝트).

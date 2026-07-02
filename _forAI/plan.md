@@ -1,5 +1,12 @@
 # Plan
 
+## 목차
+
+- [Current goal](#current-goal)
+- [Near-term work](#near-term-work)
+- [Structure decisions](#structure-decisions)
+- [Risks](#risks)
+
 ## Current goal
 
 - UE 5.8 Unreal MCP를 Claude Code에서 안정적으로 쓰는 셋업/운영 지식을 **교재 수준으로 정리**하고
@@ -11,7 +18,7 @@
   `BlueprintTools`)의 tool·입력 스키마를 뽑아 교재 부록으로 정리.
 - 실제 연결 테스트 시나리오(PointLight 스폰·색온도 지정 등)를 캡처와 함께 본문에 추가.
 - `mcp_setup.html` / `index.html`에 클라이언트 측 스코프(local/project/user) 설명 반영
-  (현재는 `_forAI/memo.md`에만 정리됨).
+  (`readme.md` 부록 A·5장 방법 C에는 반영됨 — HTML 2종만 미반영).
 
 ## Structure decisions
 
